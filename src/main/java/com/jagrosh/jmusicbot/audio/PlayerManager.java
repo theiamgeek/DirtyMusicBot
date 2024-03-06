@@ -39,6 +39,7 @@ public class PlayerManager extends DefaultAudioPlayerManager
     public void init()
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
+        registerSourceManager(new YoutubeAudioSourceManager(true, bot.getConfig().getYtEmail(), bot.getConfig().getYtPassword()))
         AudioSourceManagers.registerRemoteSources(this);
         AudioSourceManagers.registerLocalSource(this);
         DuncteBotSources.registerAll(this, "en-US");
