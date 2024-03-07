@@ -47,7 +47,7 @@ public class SkipCmd extends MusicCommand
         if(skipRatio == -1) {
           skipRatio = bot.getConfig().getSkipRatio();
         }
-        if(event.getAuthor().getIdLong() == rm.getOwner() || skipRatio == 0)
+        if(skipRatio == 0)
         {
             event.reply(event.getClient().getSuccess()+" Skipped **"+handler.getPlayer().getPlayingTrack().getInfo().title+"**");
             handler.getPlayer().stopTrack();
