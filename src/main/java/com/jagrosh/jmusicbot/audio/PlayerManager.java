@@ -54,11 +54,11 @@ public class PlayerManager extends DefaultAudioPlayerManager
 
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
-        if (bot.getConfig().getYoutubeEmail() != null && bot.getConfig().getYoutubePwd() != null)
+        if (bot.getConfig().getYtEmail() != null && bot.getConfig().getYtPassword() != null)
         {            
             YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
             HttpInterfaceManager httpInterfaceManager = yt.getHttpInterfaceManager();
-            YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYoutubeEmail(), bot.getConfig().getYoutubePwd());
+            YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYtEmail(), bot.getConfig().getYtPassword());
             while (accessTokenTracker.getMasterToken() == null) {
                 //Busy waiting for the master token
             }
