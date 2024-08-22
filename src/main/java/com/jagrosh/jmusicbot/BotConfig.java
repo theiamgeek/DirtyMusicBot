@@ -39,7 +39,7 @@ public class BotConfig
     private final static String END_TOKEN = "/// END OF JMUSICBOT CONFIG ///";
     
     private Path path = null;
-    private String token, ytemail, ytpassword, prefix, altprefix, helpWord, playlistsFolder, logLevel,
+    private String token, prefix, altprefix, helpWord, playlistsFolder, logLevel,
             successEmoji, warningEmoji, errorEmoji, loadingEmoji, searchingEmoji,
             evalEngine;
     private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots;
@@ -73,8 +73,6 @@ public class BotConfig
             
             // set values
             token = config.getString("token");
-            ytemail = config.getString("ytemail");
-            ytpassword = config.getString("ytpassword");
             prefix = config.getString("prefix");
             altprefix = config.getString("altprefix");
             helpWord = config.getString("help");
