@@ -63,6 +63,7 @@
             <version>1.13.3</version>
         </dependency>
 	<dependency>
+        <groupId>com.github.jagrosh</groupId>
 	    <artifactId>JLyrics</artifactId>
 	    <version>master-SNAPSHOT</version>
 	</dependency>
