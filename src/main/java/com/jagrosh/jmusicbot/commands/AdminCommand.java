@@ -32,7 +32,7 @@ public abstract class AdminCommand extends Command
                 return true;
             if(event.getGuild()==null)
                 return true;
-            return event.getMember().hasPermission(Permission.MANAGE_GUILD);
+            return event.getMember().hasPermission(Permission.MANAGE_SERVER);
         });
         this.guildOnly = true;
     }
