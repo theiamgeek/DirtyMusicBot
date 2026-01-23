@@ -147,13 +147,6 @@ public class JMusicBot
                         + "on https://discord.com/developers/applications/" + jda.getSelfUser().getId() + "/bot");
             }
         }
-        catch (LoginException ex)
-        {
-            prompt.alert(Prompt.Level.ERROR, "JMusicBot", ex + "\nPlease make sure you are "
-                    + "editing the correct config.txt file, and that you have used the "
-                    + "correct token (not the 'secret'!)\nConfig Location: " + config.getConfigLocation());
-            System.exit(1);
-        }
         catch(IllegalArgumentException ex)
         {
             prompt.alert(Prompt.Level.ERROR, "JMusicBot", "Some aspect of the configuration is "
