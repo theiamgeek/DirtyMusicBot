@@ -20,7 +20,9 @@ import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 
+import java.net.InetAddress;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class YouTubeUtil {
     public enum RoutingPlanner {
