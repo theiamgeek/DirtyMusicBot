@@ -215,7 +215,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
 
     
     // Formatting
-    public Message getNowPlaying(JDA jda)
+    public net.dv8tion.jda.api.utils.messages.MessageCreateData getNowPlaying(JDA jda)
     {
         if(isMusicPlaying(jda))
         {
@@ -263,7 +263,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         else return null;
     }
     
-    public Message getNoMusicPlaying(JDA jda)
+    public net.dv8tion.jda.api.utils.messages.MessageCreateData getNoMusicPlaying(JDA jda)
     {
         Guild guild = guild(jda);
         return new MessageCreateBuilder()

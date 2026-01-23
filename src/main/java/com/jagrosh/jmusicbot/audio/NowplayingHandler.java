@@ -54,7 +54,7 @@ public class NowplayingHandler
     
     public void setLastNPMessage(Message m)
     {
-        lastNP.put(m.getGuild().getIdLong(), new Pair<>(m.getTextChannel().getIdLong(), m.getIdLong()));
+        lastNP.put(m.getGuild().getIdLong(), new Pair<>(m.getChannel().getIdLong(), m.getIdLong()));
     }
     
     public void clearLastNPMessage(Guild guild)
@@ -89,7 +89,7 @@ public class NowplayingHandler
             }
             try 
             {
-                tc.editMessageById(pair.getValue(), msg).queue(m->{}, t -> lastNP.remove(guildId));
+                tc.editMessageById(pair.getValue(), net.dv8tion.jda.api.utils.messages.MessageEditData.fromCreateData(msg)).queue(m->{}, t -> lastNP.remove(guildId));
             } 
             catch(Exception e) 
             {

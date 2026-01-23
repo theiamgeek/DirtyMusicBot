@@ -75,9 +75,9 @@ public class QueueCmd extends MusicCommand
         List<QueuedTrack> list = ah.getQueue().getList();
         if(list.isEmpty())
         {
-            Message nowp = ah.getNowPlaying(event.getJDA());
-            Message nonowp = ah.getNoMusicPlaying(event.getJDA());
-            Message built = new MessageCreateBuilder()
+            net.dv8tion.jda.api.utils.messages.MessageCreateData nowp = ah.getNowPlaying(event.getJDA());
+            net.dv8tion.jda.api.utils.messages.MessageCreateData nonowp = ah.getNoMusicPlaying(event.getJDA());
+            net.dv8tion.jda.api.utils.messages.MessageCreateData built = new MessageCreateBuilder()
                     .setContent(event.getClient().getWarning() + " There is no music in the queue!")
                     .setEmbeds((nowp==null ? nonowp : nowp).getEmbeds().get(0)).build();
             event.reply(built, m -> 

@@ -53,11 +53,11 @@ public class YouTubeUtil {
     public static AbstractRoutePlanner createRouterPlanner(RoutingPlanner planner, List<IpBlock> ipBlocks) {
         switch (planner) {
             case ROTATING_NANO:
-                return new RotatingNanoIpRoutePlanner(ipBlocks);
+                return new RotatingNanoIpRoutePlanner(ipBlocks, true);
             case ROTATING:
                 return new RotatingIpRoutePlanner(ipBlocks);
             case NANO:
-                return new NanoIpRoutePlanner(ipBlocks);
+                return new NanoIpRoutePlanner(ipBlocks, true);
             case BALANCING:
                 return new BalancingIpRoutePlanner(ipBlocks);
             default:
