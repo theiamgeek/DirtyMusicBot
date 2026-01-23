@@ -34,6 +34,7 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.planner.AbstractRoutePlanner;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeSourceOptions;
 import dev.lavalink.youtube.clients.Web;
 import dev.lavalink.youtube.clients.skeleton.Client;
 import dev.lavalink.youtube.clients.Android;
@@ -78,7 +79,23 @@ public class PlayerManager extends DefaultAudioPlayerManager
             clients = new Client[] { new Music(), new Web(), new Android() };
         }
         
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true, clients);
+        YoutubeAudioSourceManager yt;
+        
+        // Configure remote cipher server if provided
+        if (config.getYTRemoteCipherURL() != null && !config.getYTRemoteCipherURL().isEmpty())
+        {
+            YoutubeSourceOptions options = new YoutubeSourceOptions()
+                .setRemoteCipher(
+                    config.getYTRemoteCipherURL(),
+                    config.getYTRemoteCipherPassword() != null ? config.getYTRemoteCipherPassword() : "",
+                    "JMusicBot"
+                );
+            yt = new YoutubeAudioSourceManager(options, clients);
+        }
+        else
+        {
+            yt = new YoutubeAudioSourceManager(true, clients);
+        }
         
         // Configure OAuth if enabled
         if (config.getYTOAuthRefreshToken() != null || !config.getYTOAuthSkipInit())

@@ -44,7 +44,7 @@ public class BotConfig
     private Path path = null;
     private String token, ytpotoken, ytvisitordata, prefix, altprefix, helpWord, playlistsFolder, logLevel,
             successEmoji, warningEmoji, errorEmoji, loadingEmoji, searchingEmoji,
-            evalEngine, ytoauthrefreshtoken;
+            evalEngine, ytoauthrefreshtoken, ytremotecipherurl, ytremotecipherpassword;
     private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots, ytoauthskipinit;
     private long owner, maxSeconds, aloneTimeUntilStop;
     private int maxYTPlaylistPages;
@@ -118,6 +118,10 @@ public class BotConfig
             // YouTube OAuth configuration
             ytoauthrefreshtoken = config.hasPath("ytoauthrefreshtoken") ? config.getString("ytoauthrefreshtoken") : null;
             ytoauthskipinit = config.hasPath("ytoauthskipinit") && config.getBoolean("ytoauthskipinit");
+            
+            // YouTube Remote Cipher configuration
+            ytremotecipherurl = config.hasPath("ytremotecipherurl") ? config.getString("ytremotecipherurl") : null;
+            ytremotecipherpassword = config.hasPath("ytremotecipherpassword") ? config.getString("ytremotecipherpassword") : null;
             
             dbots = owner == 113156185389092864L;
             
@@ -431,5 +435,15 @@ public class BotConfig
     public Config getTransforms()
     {
         return transforms;
+    }
+    
+    public String getYTRemoteCipherURL()
+    {
+        return ytremotecipherurl;
+    }
+    
+    public String getYTRemoteCipherPassword()
+    {
+        return ytremotecipherpassword;
     }
 }
