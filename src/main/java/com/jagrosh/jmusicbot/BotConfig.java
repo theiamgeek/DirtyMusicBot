@@ -18,11 +18,14 @@ package com.jagrosh.jmusicbot;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import com.jagrosh.jmusicbot.utils.TimeUtil;
+import com.jagrosh.jmusicbot.utils.YouTubeUtil;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.typesafe.config.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
@@ -39,16 +42,18 @@ public class BotConfig
     private final static String END_TOKEN = "/// END OF JMUSICBOT CONFIG ///";
     
     private Path path = null;
-    private String token, ytemail, ytpassword, prefix, altprefix, helpWord, playlistsFolder, logLevel,
+    private String token, ytpotoken, ytvisitordata, prefix, altprefix, helpWord, playlistsFolder, logLevel,
             successEmoji, warningEmoji, errorEmoji, loadingEmoji, searchingEmoji,
-            evalEngine;
-    private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots;
+            evalEngine, ytoauthrefreshtoken;
+    private boolean stayInChannel, songInGame, npImages, updatealerts, useEval, dbots, ytoauthskipinit;
     private long owner, maxSeconds, aloneTimeUntilStop;
     private int maxYTPlaylistPages;
     private double skipratio;
     private OnlineStatus status;
     private Activity game;
     private Config aliases, transforms;
+    private YouTubeUtil.RoutingPlanner ytRoutingPlanner;
+    private List<IpBlock> ytIpBlocks;
 
     private boolean valid = false;
     
@@ -73,8 +78,8 @@ public class BotConfig
             
             // set values
             token = config.getString("token");
-            ytemail = config.getString("ytemail");
-            ytpassword = config.getString("ytpassword");
+            ytpotoken = config.hasPath("ytpotoken") ? config.getString("ytpotoken") : null;
+            ytvisitordata = config.hasPath("ytvisitordata") ? config.getString("ytvisitordata") : null;
             prefix = config.getString("prefix");
             altprefix = config.getString("altprefix");
             helpWord = config.getString("help");
@@ -100,6 +105,20 @@ public class BotConfig
             aliases = config.getConfig("aliases");
             transforms = config.getConfig("transforms");
             skipratio = config.getDouble("skipratio");
+            
+            // YouTube IP routing configuration
+            ytRoutingPlanner = config.hasPath("ytroutingplanner") 
+                ? YouTubeUtil.RoutingPlanner.fromName(config.getString("ytroutingplanner")) 
+                : YouTubeUtil.RoutingPlanner.NONE;
+            ytIpBlocks = new java.util.ArrayList<>();
+            if(config.hasPath("ytipblocks")) {
+                config.getStringList("ytipblocks").forEach(block -> ytIpBlocks.add(YouTubeUtil.createIpBlock(block)));
+            }
+            
+            // YouTube OAuth configuration
+            ytoauthrefreshtoken = config.hasPath("ytoauthrefreshtoken") ? config.getString("ytoauthrefreshtoken") : null;
+            ytoauthskipinit = config.hasPath("ytoauthskipinit") && config.getBoolean("ytoauthskipinit");
+            
             dbots = owner == 113156185389092864L;
             
             // we may need to write a new config file
@@ -240,14 +259,34 @@ public class BotConfig
         return token;
     }
 
-    public String getYtEmail()
+    public String getYTPoToken()
     {
-        return ytemail;
+        return ytpotoken;
     }
 
-    public String getYtPassword()
+    public String getYTVisitorData()
     {
-        return ytpassword;
+        return ytvisitordata;
+    }
+
+    public YouTubeUtil.RoutingPlanner getYTRoutingPlanner()
+    {
+        return ytRoutingPlanner;
+    }
+
+    public List<IpBlock> getYTIpBlocks()
+    {
+        return ytIpBlocks;
+    }
+
+    public String getYTOAuthRefreshToken()
+    {
+        return ytoauthrefreshtoken;
+    }
+
+    public boolean getYTOAuthSkipInit()
+    {
+        return ytoauthskipinit;
     }
 
     public double getSkipRatio()

@@ -17,11 +17,12 @@ package com.jagrosh.jmusicbot.audio;
 
 import com.dunctebot.sourcemanagers.DuncteBotSources;
 import com.jagrosh.jmusicbot.Bot;
+import com.jagrosh.jmusicbot.BotConfig;
+import com.jagrosh.jmusicbot.utils.YouTubeUtil;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeHttpContextFilter;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
@@ -30,10 +31,16 @@ import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
+import com.sedmelluq.lava.extensions.youtuberotator.planner.AbstractRoutePlanner;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.Web;
+import dev.lavalink.youtube.clients.skeleton.Client;
+import dev.lavalink.youtube.clients.Android;
+import dev.lavalink.youtube.clients.Music;
+import dev.lavalink.youtube.clients.Tv;
+import dev.lavalink.youtube.clients.TvHtml5Embedded;
 import net.dv8tion.jda.api.entities.Guild;
-import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAccessTokenTracker;
 
 /**
  *
@@ -52,25 +59,45 @@ public class PlayerManager extends DefaultAudioPlayerManager
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
-        yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
-        if (bot.getConfig().getYtEmail() != null && bot.getConfig().getYtPassword() != null)
-        {            
-            YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
-            HttpInterfaceManager httpInterfaceManager = yt.getHttpInterfaceManager();
-            YoutubeAccessTokenTracker accessTokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager, bot.getConfig().getYtEmail(), bot.getConfig().getYtPassword());
-            while (accessTokenTracker.getMasterToken() == null) {
-                //Busy waiting for the master token
-            }
-            while (accessTokenTracker.getAccessToken() == null) {
-                //Busy waiting for the access token
-            }
-            while (accessTokenTracker.getVisitorId() == null) {
-                //Busy waiting for the visitor token
-            }
-            youtubeHttpContextFilter.setTokenTracker(accessTokenTracker);
-            httpInterfaceManager.setHttpContextFilter(youtubeHttpContextFilter);
+        BotConfig config = bot.getConfig();
+        
+        // Set PO Token and Visitor Data if provided
+        if (config.getYTPoToken() != null && config.getYTVisitorData() != null)
+            Web.setPoTokenAndVisitorData(config.getYTPoToken(), config.getYTVisitorData());
+
+        // Create YouTube source with OAuth-compatible clients (TV clients can play age-restricted content with OAuth)
+        Client[] clients;
+        if (config.getYTOAuthRefreshToken() != null || !config.getYTOAuthSkipInit())
+        {
+            // Include TV clients for OAuth support and age-restricted content
+            clients = new Client[] { new Music(), new Web(), new Android(), new Tv(), new TvHtml5Embedded() };
         }
+        else
+        {
+            // Default clients without OAuth
+            clients = new Client[] { new Music(), new Web(), new Android() };
+        }
+        
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true, clients);
+        
+        // Configure OAuth if enabled
+        if (config.getYTOAuthRefreshToken() != null || !config.getYTOAuthSkipInit())
+        {
+            yt.useOauth2(config.getYTOAuthRefreshToken(), config.getYTOAuthSkipInit());
+        }
+        
+        // Configure IP rotation if enabled
+        if (config.getYTRoutingPlanner() != YouTubeUtil.RoutingPlanner.NONE)
+        {
+            AbstractRoutePlanner routePlanner = YouTubeUtil.createRouterPlanner(config.getYTRoutingPlanner(), config.getYTIpBlocks());
+            YoutubeIpRotatorSetup rotator = new YoutubeIpRotatorSetup(routePlanner);
+
+            rotator.forConfiguration(yt.getHttpInterfaceManager(), false)
+                    .withMainDelegateFilter(yt.getContextFilter())
+                    .setup();
+        }
+        
+        yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
         registerSourceManager(yt);
 
         registerSourceManager(SoundCloudAudioSourceManager.createDefault());
