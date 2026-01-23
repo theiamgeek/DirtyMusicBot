@@ -20,7 +20,9 @@ import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 
+import java.net.InetAddress;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class YouTubeUtil {
     public enum RoutingPlanner {
@@ -53,7 +55,7 @@ public class YouTubeUtil {
     public static AbstractRoutePlanner createRouterPlanner(RoutingPlanner planner, List<IpBlock> ipBlocks) {
         switch (planner) {
             case ROTATING_NANO:
-                return new RotatingNanoIpRoutePlanner(ipBlocks, true);
+                return new RotatingNanoIpRoutePlanner(ipBlocks, addr -> true);
             case ROTATING:
                 return new RotatingIpRoutePlanner(ipBlocks);
             case NANO:
